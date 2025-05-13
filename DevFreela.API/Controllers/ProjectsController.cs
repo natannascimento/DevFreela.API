@@ -1,13 +1,16 @@
 ﻿using DevFreela.API.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace DevFreela.API.Controllers;
 
 [Route("api/projects")]
 [ApiController]
-public class ProjectsController : ControllerBase
+public class ProjectsController(IOptions<FreelanceTotalCostConfig> options) : ControllerBase
 {
+    private readonly FreelanceTotalCostConfig _config = options.Value;
+
     [HttpGet]
     public IActionResult GetAll()
     {
@@ -21,6 +24,10 @@ public class ProjectsController : ControllerBase
     [HttpPost]
     public IActionResult Post(CreateProjectInputModel model)
     {
+        if (model.TotalCost < _config.Minimum || model.TotalCost > _config.Maximum)
+        {
+            return BadRequest("Total cost is out of range");
+        }
         return CreatedAtAction(nameof(GetById), new { id = 1 }, model);
     }
     [HttpPut("{id}")]
@@ -46,6 +53,6 @@ public class ProjectsController : ControllerBase
     [HttpPost("{id}/comment")]
     public IActionResult PostComment(int id, CreateProjectCommentInputModel model)
     {
-        return CreatedAtAction(nameof(GetById), new { id = 1 }, comment);
+        return CreatedAtAction(nameof(GetById), new { id = 1 }, null);
     }
 }
