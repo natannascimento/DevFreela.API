@@ -22,6 +22,7 @@ public class ProjectsController(IOptions<FreelanceTotalCostConfig> options,
     [HttpGet("{id}")]
     public IActionResult GetById(int id)
     {
+        throw new Exception();
         return Ok($"Get project with id {id}");
     }
     [HttpPost]
